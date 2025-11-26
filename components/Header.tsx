@@ -1,26 +1,26 @@
 import React from 'react';
-import { MapPin, Mountain } from 'lucide-react';
+import { MapPin, Skull } from 'lucide-react';
 
 export const Header: React.FC = () => {
   return (
-    <header className="w-full p-6 flex items-center justify-between border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
-      <div className="flex items-center gap-3">
-        <div className="bg-cyan-500 p-2 rounded-lg shadow-[0_0_15px_rgba(6,182,212,0.5)]">
-          <Mountain className="text-white w-6 h-6" />
+    <header className="w-full p-4 md:p-6 flex items-center justify-between border-b-4 border-neutral-800 bg-neutral-900/90 backdrop-blur-sm sticky top-0 z-50">
+      <div className="flex items-center gap-3 md:gap-4">
+        <div className="bg-yellow-400 p-2 -rotate-3 border-2 border-white shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)]">
+          <Skull className="text-black w-6 h-6 md:w-8 md:h-8" strokeWidth={2.5} />
         </div>
-        <div>
-          <h1 className="text-3xl font-bold tracking-wide text-white leading-none">
-            SPOT<span className="text-cyan-400">CHECK</span>
+        <div className="flex flex-col">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-marker tracking-widest text-white leading-none -ml-1 uppercase">
+            WHERE'S THAT <span className="text-yellow-400">SPOT?</span>
           </h1>
-          <p className="text-slate-400 text-xs font-medium tracking-wider uppercase">
-            Action Sports Location Scout
+          <p className="font-typewriter text-neutral-400 text-[10px] md:text-xs tracking-widest bg-neutral-950 px-1 mt-1 border border-neutral-700 inline-block w-fit">
+            STREET SPOT LOCATOR
           </p>
         </div>
       </div>
       
-      <div className="hidden sm:flex items-center gap-2 text-slate-500 text-sm">
-        <MapPin className="w-4 h-4" />
-        <span>Powered by Gemini 2.5</span>
+      <div className="hidden sm:flex items-center gap-2 font-typewriter text-neutral-500 text-xs border border-neutral-700 px-3 py-1 rounded-full">
+        <MapPin className="w-3 h-3" />
+        <span>GEMINI 2.5 POWERED</span>
       </div>
     </header>
   );

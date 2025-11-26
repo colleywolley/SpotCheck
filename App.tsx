@@ -4,7 +4,7 @@ import { AnalysisDisplay } from './components/AnalysisDisplay';
 import { fileToBase64, isValidFileType } from './utils/fileHelpers';
 import { analyzeMedia } from './services/geminiService';
 import { AnalysisResult, FileData, InputMode } from './types';
-import { UploadCloud, Youtube, X, Loader2, Image as ImageIcon, Video as VideoIcon, MapPin, Plus, Link as LinkIcon, Clock, Timer } from 'lucide-react';
+import { UploadCloud, Youtube, X, Loader2, Image as ImageIcon, Video as VideoIcon, MapPin, Plus, Link as LinkIcon, Clock, Timer, Search } from 'lucide-react';
 
 const App: React.FC = () => {
   const [mode, setMode] = useState<InputMode>(InputMode.UPLOAD);
@@ -24,18 +24,18 @@ const App: React.FC = () => {
     const filesArray = Array.from(files);
 
     if (filesData.length + filesArray.length > 5) {
-      setError("You can upload a maximum of 5 files.");
+      setError("MAX 5 FILES ALLOWED.");
       return;
     }
 
     for (const file of filesArray) {
       if (!isValidFileType(file)) {
-        setError(`"${file.name}" is not a valid file type. Please upload images or videos.`);
+        setError(`"${file.name}" INVALID TYPE. IMAGES OR VIDEO ONLY.`);
         continue;
       }
 
       if (file.size > 20 * 1024 * 1024) {
-        setError(`"${file.name}" is too large. Max size is 20MB per file.`);
+        setError(`"${file.name}" TOO BIG. MAX 20MB.`);
         continue;
       }
 
@@ -49,7 +49,7 @@ const App: React.FC = () => {
         });
       } catch (err) {
         console.error("Error processing file:", err);
-        setError("Failed to process one or more files.");
+        setError("FILE PROCESS ERROR.");
       }
     }
 
@@ -125,61 +125,63 @@ const App: React.FC = () => {
         if (youtubeDuration) timeContext += ` The clip lasts for ${youtubeDuration} seconds.`;
 
         prompt = `I found a skateboarding or snowboarding video at this URL: ${youtubeUrl}.${timeContext} \n\nCan you tell me where this was filmed? I need the most specific location possible: an exact address, a street intersection, or a neighborhood. Use Google Search to verify.`;
-        await analyzeMedia(prompt, [], sourceUrl).then(setResult); // Pass sourceUrl even in YT mode if user entered it
+        await analyzeMedia(prompt, [], sourceUrl).then(setResult); 
       }
     } catch (err) {
-      setError("An error occurred while analyzing the location. Please try again.");
+      setError("ANALYSIS FAILED. TRY AGAIN.");
     } finally {
       setIsAnalyzing(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-900 text-slate-100 selection:bg-cyan-500/30">
+    <div className="min-h-screen flex flex-col bg-neutral-900 text-neutral-100 selection:bg-yellow-400 selection:text-black">
       <Header />
 
       <main className="flex-1 w-full max-w-5xl mx-auto p-4 md:p-8 flex flex-col gap-8">
         
         {/* Intro Section */}
-        <div className="text-center space-y-4 py-8">
-          <h2 className="text-4xl md:text-5xl font-bold font-brand tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600">
-            WHERE IS THAT SPOT?
-          </h2>
-          <p className="text-slate-400 max-w-2xl mx-auto text-lg">
-            Upload clips or photos (drag & drop supported) or drop a YouTube link. 
-            Our AI will scout the globe to pinpoint the exact address, intersection, or neighborhood.
+        <div className="text-center space-y-2 py-8">
+          <div className="inline-block relative">
+            <h2 className="text-5xl md:text-7xl font-marker transform -rotate-1 text-white drop-shadow-[4px_4px_0px_rgba(255,255,255,0.2)]">
+              WHERE'S THAT SPOT?
+            </h2>
+            <div className="absolute -bottom-2 right-0 w-full h-2 bg-yellow-400 -rotate-1 skew-x-12"></div>
+          </div>
+          <p className="font-typewriter text-neutral-400 max-w-2xl mx-auto text-sm md:text-base mt-6 border-l-4 border-yellow-400 pl-4 text-left md:text-center md:border-none md:pl-0">
+            Upload raw footy or drop a YouTube link. We'll find the concrete.
           </p>
         </div>
 
         {/* Input Card */}
-        <div className="bg-slate-800 rounded-2xl border border-slate-700 shadow-2xl overflow-hidden">
+        <div className="bg-neutral-800 border-4 border-neutral-700 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.5)]">
           {/* Tabs */}
-          <div className="flex border-b border-slate-700">
+          <div className="flex border-b-4 border-neutral-700">
             <button
               onClick={() => { setMode(InputMode.UPLOAD); setResult(null); setError(null); }}
-              className={`flex-1 py-4 text-center font-medium transition-colors flex items-center justify-center gap-2 ${
+              className={`flex-1 py-4 text-center font-marker text-xl tracking-wide transition-all flex items-center justify-center gap-2 ${
                 mode === InputMode.UPLOAD 
-                ? 'bg-slate-700/50 text-cyan-400 border-b-2 border-cyan-400' 
-                : 'text-slate-500 hover:text-slate-300 hover:bg-slate-700/30'
+                ? 'bg-neutral-800 text-yellow-400' 
+                : 'bg-neutral-900 text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800'
               }`}
             >
-              <UploadCloud className="w-5 h-5" />
-              Upload Media
+              <UploadCloud className="w-6 h-6" strokeWidth={2.5} />
+              UPLOAD
             </button>
             <button
               onClick={() => { setMode(InputMode.YOUTUBE); setResult(null); setError(null); }}
-              className={`flex-1 py-4 text-center font-medium transition-colors flex items-center justify-center gap-2 ${
+              className={`flex-1 py-4 text-center font-marker text-xl tracking-wide transition-all flex items-center justify-center gap-2 border-l-4 border-neutral-700 ${
                 mode === InputMode.YOUTUBE 
-                ? 'bg-slate-700/50 text-red-400 border-b-2 border-red-400' 
-                : 'text-slate-500 hover:text-slate-300 hover:bg-slate-700/30'
+                ? 'bg-neutral-800 text-pink-500' 
+                : 'bg-neutral-900 text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800'
               }`}
             >
-              <Youtube className="w-5 h-5" />
-              YouTube Link
+              <Youtube className="w-6 h-6" strokeWidth={2.5} />
+              YOUTUBE
             </button>
           </div>
 
-          <div className="p-8">
+          <div className="p-6 md:p-8">
             {/* Upload Mode */}
             {mode === InputMode.UPLOAD && (
               <div className="space-y-6">
@@ -190,21 +192,21 @@ const App: React.FC = () => {
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
                   onClick={() => fileInputRef.current?.click()}
-                  className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center gap-4 cursor-pointer transition-all group ${
+                  className={`relative border-4 border-dashed p-8 flex flex-col items-center justify-center gap-4 cursor-pointer transition-all group min-h-[200px] ${
                     isDragging 
-                    ? 'border-cyan-400 bg-cyan-900/20 scale-[1.01]' 
-                    : 'border-slate-600 hover:border-cyan-500 hover:bg-slate-700/20'
+                    ? 'border-yellow-400 bg-yellow-400/10' 
+                    : 'border-neutral-600 hover:border-white hover:bg-neutral-700/50'
                   }`}
                 >
-                  <div className={`p-4 rounded-full transition-colors ${isDragging ? 'bg-cyan-800' : 'bg-slate-700 group-hover:bg-slate-600'}`}>
-                    <UploadCloud className={`w-8 h-8 ${isDragging ? 'text-cyan-200' : 'text-slate-400 group-hover:text-cyan-400'}`} />
+                  <div className={`p-4 transition-transform group-hover:scale-110 duration-300`}>
+                    <UploadCloud className={`w-12 h-12 ${isDragging ? 'text-yellow-400' : 'text-neutral-400 group-hover:text-white'}`} strokeWidth={1.5} />
                   </div>
-                  <div className="text-center">
-                    <p className="text-lg font-medium text-slate-200">
-                      {isDragging ? 'Drop files here' : 'Click or Drag & Drop to upload'}
+                  <div className="text-center font-typewriter">
+                    <p className="text-lg text-neutral-200">
+                      {isDragging ? 'DROP IT LIKE ITS HOT' : 'DROP FILES OR CLICK'}
                     </p>
-                    <p className="text-sm text-slate-500 mt-1">
-                      Add multiple angles. JPG, PNG, MP4, MOV (Max 5 files)
+                    <p className="text-xs text-neutral-500 mt-2 uppercase">
+                      JPG, PNG, MP4, MOV (MAX 5)
                     </p>
                   </div>
                   <input 
@@ -219,17 +221,17 @@ const App: React.FC = () => {
 
                 {/* Previews Grid */}
                 {filesData.length > 0 && (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 animate-in fade-in slide-in-from-bottom-2">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in slide-in-from-bottom-2">
                     {filesData.map((data, idx) => (
-                      <div key={idx} className="relative group rounded-lg overflow-hidden bg-black border border-slate-700 shadow-md aspect-square">
+                      <div key={idx} className="relative group border-2 border-neutral-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-neutral-900 aspect-square">
                         <button 
                           onClick={(e) => { e.stopPropagation(); removeFile(idx); }}
-                          className="absolute top-2 right-2 p-1.5 bg-black/60 hover:bg-red-500/80 text-white rounded-full backdrop-blur-sm transition-all z-10 opacity-0 group-hover:opacity-100"
+                          className="absolute -top-2 -right-2 p-1 bg-red-500 text-black border-2 border-black hover:scale-110 transition-transform z-10"
                         >
-                          <X className="w-3 h-3" />
+                          <X className="w-4 h-4" />
                         </button>
                         
-                        <div className="w-full h-full flex items-center justify-center bg-dots-pattern">
+                        <div className="w-full h-full grayscale group-hover:grayscale-0 transition-all duration-300">
                           {data.mimeType.startsWith('video/') ? (
                             <video src={data.previewUrl} className="w-full h-full object-cover" />
                           ) : (
@@ -237,44 +239,41 @@ const App: React.FC = () => {
                           )}
                         </div>
                         
-                        <div className="absolute bottom-0 inset-x-0 p-2 bg-gradient-to-t from-black/80 to-transparent flex items-center gap-2">
-                           {data.mimeType.startsWith('video/') ? <VideoIcon className="w-3 h-3 text-cyan-400"/> : <ImageIcon className="w-3 h-3 text-purple-400"/>}
-                           <span className="text-xs text-white truncate">{data.file.name}</span>
+                        <div className="absolute bottom-0 inset-x-0 p-1 bg-black/80 flex items-center gap-2 border-t border-neutral-700">
+                           {data.mimeType.startsWith('video/') ? <VideoIcon className="w-3 h-3 text-yellow-400"/> : <ImageIcon className="w-3 h-3 text-pink-400"/>}
+                           <span className="text-[10px] font-typewriter text-neutral-300 truncate uppercase">{data.file.name}</span>
                         </div>
                       </div>
                     ))}
                     
-                    {/* Add more button if under limit */}
+                    {/* Add more button */}
                     {filesData.length < 5 && (
                       <button 
                         onClick={() => fileInputRef.current?.click()}
-                        className="flex flex-col items-center justify-center gap-2 border border-slate-700 bg-slate-800/50 hover:bg-slate-700 rounded-lg aspect-square text-slate-500 hover:text-cyan-400 transition-colors"
+                        className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-neutral-600 hover:border-yellow-400 hover:text-yellow-400 aspect-square text-neutral-500 transition-colors font-typewriter group"
                       >
-                         <Plus className="w-6 h-6" />
-                         <span className="text-xs font-medium">Add More</span>
+                         <Plus className="w-8 h-8 group-hover:rotate-90 transition-transform" />
+                         <span className="text-xs">ADD ANGLE</span>
                       </button>
                     )}
                   </div>
                 )}
 
                 {/* Source URL Input */}
-                <div className="border-t border-slate-700/50 pt-4">
-                  <label className="block text-sm font-medium text-slate-400 mb-2">
-                    Where did you find this? (Optional)
+                <div className="border-t-4 border-neutral-700/50 pt-6">
+                  <label className="block text-sm font-marker text-neutral-400 mb-2 uppercase tracking-wide">
+                    Source Link (Optional)
                   </label>
-                  <div className="relative">
+                  <div className="relative group">
                     <input
                       type="text"
                       value={sourceUrl}
                       onChange={(e) => setSourceUrl(e.target.value)}
-                      placeholder="https://instagram.com/p/..., https://thrasher.com/..."
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg py-3 pl-11 pr-4 text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all text-sm"
+                      placeholder="HTTPS://..."
+                      className="w-full bg-neutral-900 border-2 border-neutral-600 rounded-none py-3 pl-11 pr-4 text-white placeholder-neutral-600 focus:outline-none focus:border-yellow-400 focus:bg-black transition-all font-typewriter"
                     />
-                    <LinkIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-4 h-4" />
+                    <LinkIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500 group-focus-within:text-yellow-400 w-4 h-4" />
                   </div>
-                  <p className="text-xs text-slate-500 mt-2">
-                    Providing a link helps the AI identify riders, crews, or event context.
-                  </p>
                 </div>
               </div>
             )}
@@ -283,44 +282,44 @@ const App: React.FC = () => {
             {mode === InputMode.YOUTUBE && (
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-slate-400 mb-2">Video URL</label>
-                  <div className="relative">
+                  <label className="block text-sm font-marker text-neutral-400 mb-2 uppercase tracking-wide">Video URL</label>
+                  <div className="relative group">
                     <input
                       type="text"
                       value={youtubeUrl}
                       onChange={(e) => setYoutubeUrl(e.target.value)}
-                      placeholder="https://www.youtube.com/watch?v=..."
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg py-4 px-5 text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all"
+                      placeholder="HTTPS://YOUTUBE.COM/..."
+                      className="w-full bg-neutral-900 border-2 border-neutral-600 rounded-none py-4 px-5 text-white placeholder-neutral-600 focus:outline-none focus:border-pink-500 focus:bg-black transition-all font-typewriter"
                     />
-                    <Youtube className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-600 w-6 h-6" />
+                    <Youtube className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-600 group-focus-within:text-pink-500 w-6 h-6" />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-400 mb-2">Timestamp where clip starts:</label>
-                    <div className="relative">
+                    <label className="block text-sm font-marker text-neutral-400 mb-2 uppercase tracking-wide">Start Timestamp</label>
+                    <div className="relative group">
                       <input
                         type="text"
                         value={youtubeStartTime}
                         onChange={(e) => setYoutubeStartTime(e.target.value)}
-                        placeholder="e.g. 2:15"
-                        className="w-full bg-slate-900 border border-slate-700 rounded-lg py-3 px-4 pl-10 text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all"
+                        placeholder="E.G. 2:15"
+                        className="w-full bg-neutral-900 border-2 border-neutral-600 rounded-none py-3 px-4 pl-10 text-white placeholder-neutral-600 focus:outline-none focus:border-pink-500 focus:bg-black transition-all font-typewriter"
                       />
-                      <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600 w-4 h-4" />
+                      <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-600 group-focus-within:text-pink-500 w-4 h-4" />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-400 mb-2">How many seconds is the clip?</label>
-                    <div className="relative">
+                    <label className="block text-sm font-marker text-neutral-400 mb-2 uppercase tracking-wide">Duration (Sec)</label>
+                    <div className="relative group">
                       <input
                         type="text"
                         value={youtubeDuration}
                         onChange={(e) => setYoutubeDuration(e.target.value)}
-                        placeholder="e.g. 15"
-                        className="w-full bg-slate-900 border border-slate-700 rounded-lg py-3 px-4 pl-10 text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all"
+                        placeholder="E.G. 15"
+                        className="w-full bg-neutral-900 border-2 border-neutral-600 rounded-none py-3 px-4 pl-10 text-white placeholder-neutral-600 focus:outline-none focus:border-pink-500 focus:bg-black transition-all font-typewriter"
                       />
-                      <Timer className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600 w-4 h-4" />
+                      <Timer className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-600 group-focus-within:text-pink-500 w-4 h-4" />
                     </div>
                   </div>
                 </div>
@@ -329,8 +328,8 @@ const App: React.FC = () => {
 
             {/* Action Button */}
             {error && (
-              <div className="mt-4 p-4 bg-red-900/20 border border-red-500/30 rounded-lg text-red-300 text-sm text-center">
-                {error}
+              <div className="mt-4 p-4 bg-red-900/10 border-2 border-red-500 text-red-500 font-typewriter text-sm text-center">
+                ! {error}
               </div>
             )}
 
@@ -338,17 +337,17 @@ const App: React.FC = () => {
               <button
                 onClick={handleAnalyze}
                 disabled={isAnalyzing || (mode === InputMode.UPLOAD && filesData.length === 0) || (mode === InputMode.YOUTUBE && !youtubeUrl)}
-                className="w-full py-4 bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed text-white font-bold text-lg rounded-xl shadow-lg shadow-cyan-900/20 transition-all active:scale-[0.99] flex items-center justify-center gap-3"
+                className="w-full py-4 bg-white hover:bg-yellow-400 text-black font-marker text-2xl tracking-widest border-2 border-transparent hover:border-black disabled:bg-neutral-800 disabled:text-neutral-600 disabled:border-neutral-700 disabled:cursor-not-allowed shadow-[4px_4px_0px_0px_#ffffff] hover:shadow-[6px_6px_0px_0px_#000000] active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-3 group"
               >
                 {isAnalyzing ? (
                   <>
                     <Loader2 className="w-6 h-6 animate-spin" />
-                    Scouting Location...
+                    <span className="animate-pulse">SCOUTING...</span>
                   </>
                 ) : (
                   <>
-                    <MapPin className="w-6 h-6" />
-                    Identify Spot
+                    <MapPin className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                    FIND THE SPOT
                   </>
                 )}
               </button>
@@ -361,8 +360,8 @@ const App: React.FC = () => {
 
       </main>
 
-      <footer className="p-8 text-center text-slate-600 text-sm">
-        <p>&copy; {new Date().getFullYear()} SpotCheck AI. Built with Gemini 2.5 Flash.</p>
+      <footer className="p-8 text-center text-neutral-600 text-xs font-typewriter border-t border-neutral-800 mt-8">
+        <p>BUILT WITH GEMINI 2.5 FLASH. &copy; {new Date().getFullYear()} STREET SPOT LOCATOR.</p>
       </footer>
     </div>
   );

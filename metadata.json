@@ -1,5 +1,5 @@
 {
-  "name": "SpotCheck AI",
+  "name": "Where's that spot?",
   "description": "Identify snowboarding and skateboarding locations from photos, videos, and links using Gemini 2.5.",
   "requestFramePermissions": []
 }
