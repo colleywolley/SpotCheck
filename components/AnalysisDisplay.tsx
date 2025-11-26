@@ -1,18 +1,45 @@
 import React from 'react';
 import { AnalysisResult } from '../types';
-import { Map, ExternalLink, Search, MapPin } from 'lucide-react';
+import { Map, ExternalLink, Search, MapPin, Layers } from 'lucide-react';
 
 interface AnalysisDisplayProps {
   result: AnalysisResult;
 }
 
 export const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ result }) => {
-  // Simple markdown-like parser for bold text to make it look nicer
+  // Extract coordinates if present in the text (format: COORDINATES: Lat,Lng)
+  const coordRegex = /COORDINATES:\s*(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)/;
+  const match = result.text.match(coordRegex);
+  
+  let latitude = '';
+  let longitude = '';
+  let displayText = result.text;
+
+  if (match) {
+    latitude = match[1];
+    longitude = match[3];
+    // Remove the coordinates line from the display text to keep it clean
+    displayText = result.text.replace(coordRegex, '').trim();
+  }
+
+  // Simple markdown-like parser for bold text and lists to make it look nicer
   const renderText = (text: string) => {
     return text.split('\n').map((line, i) => {
-      const parts = line.split(/(\*\*.*?\*\*)/g);
+      // Basic list item handling
+      let content = line;
+      let isList = false;
+      
+      if (line.trim().startsWith('* ') || line.trim().startsWith('- ')) {
+         content = line.trim().substring(2);
+         isList = true;
+      }
+
+      const parts = content.split(/(\*\*.*?\*\*)/g);
+      
+      if (!line.trim()) return null; // Skip empty lines mostly
+
       return (
-        <p key={i} className="mb-3 text-slate-300 leading-relaxed">
+        <p key={i} className={`mb-3 text-slate-300 leading-relaxed ${isList ? 'pl-4 border-l-2 border-cyan-500/30 ml-2' : ''}`}>
           {parts.map((part, j) => {
             if (part.startsWith('**') && part.endsWith('**')) {
               return <strong key={j} className="text-cyan-300 font-bold">{part.slice(2, -2)}</strong>;
@@ -33,12 +60,40 @@ export const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ result }) => {
         <h2 className="text-xl font-bold text-white uppercase tracking-wide">Location Analysis</h2>
       </div>
 
-      <div className="prose prose-invert max-w-none">
-        {renderText(result.text)}
+      <div className="prose prose-invert max-w-none mb-8">
+        {renderText(displayText)}
       </div>
 
+      {/* Embedded Map Section */}
+      {latitude && longitude && (
+        <div className="mb-8 overflow-hidden rounded-xl border border-slate-700 shadow-xl bg-slate-900">
+          <div className="bg-slate-800 px-4 py-2 border-b border-slate-700 flex items-center justify-between">
+             <div className="flex items-center gap-2 text-xs font-semibold text-cyan-400 uppercase tracking-wider">
+               <Layers className="w-4 h-4" />
+               Satellite View
+             </div>
+             <div className="text-xs text-slate-500">
+               {parseFloat(latitude).toFixed(5)}, {parseFloat(longitude).toFixed(5)}
+             </div>
+          </div>
+          <div className="w-full h-80 md:h-96 bg-slate-900 relative">
+            <iframe
+              width="100%"
+              height="100%"
+              frameBorder="0"
+              scrolling="no"
+              marginHeight={0}
+              marginWidth={0}
+              src={`https://maps.google.com/maps?q=${latitude},${longitude}&t=k&z=19&ie=UTF8&iwloc=&output=embed`}
+              className="w-full h-full filter saturate-[0.8] contrast-[1.1]"
+              title="Satellite Map"
+            />
+          </div>
+        </div>
+      )}
+
       {hasGrounding && (
-        <div className="mt-8 pt-6 border-t border-slate-700/50">
+        <div className="pt-6 border-t border-slate-700/50">
           <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
             <Search className="w-4 h-4" />
             Verified Sources
